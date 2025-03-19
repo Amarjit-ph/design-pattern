@@ -70,6 +70,240 @@ Separates the construction of a complex object from its representation, allowing
 Creates new objects by copying an existing object (prototype) instead of creating from scratch.
     Example: Cloning game characters or settings.
 
+## 1. Singleton Pattern 
+The Singleton Pattern ensures that a class has only one instance throughout the application and provides a global access point to that instance. It is useful when exactly one object is needed to coordinate actions across the system, like configuration settings or database connections.
+
+Key Features:
+- Ensures only one instance of a class exists.
+- Provides global access to that instance.
+- Controls concurrent access in multithreaded scenarios (if needed).
+
+```js
+class Database {
+  constructor() {
+    if (Database.instance) {
+      return Database.instance;
+    }
+    console.log("Creating new Database connection...");
+    Database.instance = this;
+  }
+
+  connect() {
+    console.log("Connected to Database.");
+  }
+}
+
+// Usage
+const db1 = new Database();
+db1.connect(); // Output: Creating new Database connection... Connected to Database.
+
+const db2 = new Database();
+db2.connect(); // Output: Connected to Database.
+
+console.log(db1 === db2); // Output: true
+```
+
+## 2. Factory Method Pattern
+The Factory Method Pattern provides an interface for creating objects but allows subclasses to decide which specific class to instantiate. Instead of calling a constructor directly, the creation logic is handled in a method, promoting flexibility, loose coupling, and easier code maintenance.
+
+Key Features:
+- Defines a common interface for object creation.
+- Delegates the instantiation to subclasses.
+- Promotes code flexibility by decoupling object creation from usage.
+
+```js
+// Shape interface
+class Shape {
+  draw() {}
+}
+
+// Concrete classes
+class Circle extends Shape {
+  draw() { console.log("Drawing Circle"); }
+}
+
+class Square extends Shape {
+  draw() { console.log("Drawing Square"); }
+}
+
+// Factory Method
+class ShapeFactory {
+  static getShape(type) {
+    if (type === "Circle") return new Circle();
+    if (type === "Square") return new Square();
+    return null;
+  }
+}
+
+// Usage
+const shape1 = ShapeFactory.getShape("Circle");
+shape1.draw(); // Output: Drawing Circle
+
+const shape2 = ShapeFactory.getShape("Square");
+shape2.draw(); // Output: Drawing Square
+```
+## 3.  Abstract Factory Pattern
+The Abstract Factory Pattern provides an interface for creating families of related or dependent objects without specifying their concrete classes. It allows you to produce multiple types of related objects that share a common theme, ensuring consistency across products while keeping creation logic flexible and scalable.
+
+Key Features:
+- Produces families of related objects.
+- Promotes consistency without tight coupling.
+- Allows easy swapping of product families (e.g., themes, platforms).
+
+```js
+// Abstract products
+class Button {
+  render() {}
+}
+
+class Checkbox {
+  render() {}
+}
+
+// Concrete products for Light theme
+class LightButton extends Button {
+  render() { console.log("Rendering Light Button"); }
+}
+
+class LightCheckbox extends Checkbox {
+  render() { console.log("Rendering Light Checkbox"); }
+}
+
+// Concrete products for Dark theme
+class DarkButton extends Button {
+  render() { console.log("Rendering Dark Button"); }
+}
+
+class DarkCheckbox extends Checkbox {
+  render() { console.log("Rendering Dark Checkbox"); }
+}
+
+// Abstract Factory
+class UIFactory {
+  createButton() {}
+  createCheckbox() {}
+}
+
+// Concrete Factory: Light Theme
+class LightFactory extends UIFactory {
+  createButton() { return new LightButton(); }
+  createCheckbox() { return new LightCheckbox(); }
+}
+
+// Concrete Factory: Dark Theme
+class DarkFactory extends UIFactory {
+  createButton() { return new DarkButton(); }
+  createCheckbox() { return new DarkCheckbox(); }
+}
+
+// Usage
+function renderUI(factory) {
+  const button = factory.createButton();
+  const checkbox = factory.createCheckbox();
+  button.render();
+  checkbox.render();
+}
+
+const lightTheme = new LightFactory();
+renderUI(lightTheme); // Output: Rendering Light Button, Rendering Light Checkbox
+
+const darkTheme = new DarkFactory();
+renderUI(darkTheme); // Output: Rendering Dark Button, Rendering Dark Checkbox
+```
+## 4. Builder Pattern
+
+The Builder Pattern is used to construct complex objects step by step, allowing you to create different representations of the same object. It separates the construction process from the final object representation, making the code cleaner and more manageable, especially when dealing with objects with many optional parameters.
+
+Key Features:
+- Builds complex objects step by step.
+- Allows varying internal representations.
+- Improves readability and manageability of object creation.
+
+```js
+// Product
+class Meal {
+  constructor() {
+    this.items = [];
+  }
+  addItem(item) {
+    this.items.push(item);
+  }
+  showItems() {
+    console.log("Meal includes:", this.items.join(", "));
+  }
+}
+
+// Builder
+class MealBuilder {
+  constructor() {
+    this.meal = new Meal();
+  }
+  addBurger() {
+    this.meal.addItem("Burger");
+    return this;
+  }
+  addDrink() {
+    this.meal.addItem("Drink");
+    return this;
+  }
+  addDessert() {
+    this.meal.addItem("Dessert");
+    return this;
+  }
+  build() {
+    return this.meal;
+  }
+}
+
+// Usage
+const meal = new MealBuilder()
+  .addBurger()
+  .addDrink()
+  .addDessert()
+  .build();
+
+meal.showItems(); // Output: Meal includes: Burger, Drink, Dessert
+```
+
+## 5. Prototype Pattern
+
+The Prototype Pattern creates new objects by cloning an existing object (prototype) instead of creating instances from scratch. It is especially useful when object creation is costly or complex, and you want to avoid repeated instantiation overhead.
+
+Key Features:
+- Clones existing objects to create new ones.
+- Reduces the cost of creating complex objects.
+- Simplifies object creation when configuration is similar.
+
+```js
+// Prototype class
+class Character {
+  constructor(name, weapon) {
+    this.name = name;
+    this.weapon = weapon;
+  }
+
+  clone() {
+    return new Character(this.name, this.weapon);
+  }
+
+  display() {
+    console.log(`Character: ${this.name}, Weapon: ${this.weapon}`);
+  }
+}
+
+// Usage
+const original = new Character("Knight", "Sword");
+original.display(); // Output: Character: Knight, Weapon: Sword
+
+const clone1 = original.clone();
+clone1.display(); // Output: Character: Knight, Weapon: Sword
+
+// Customize clone
+clone1.name = "Archer";
+clone1.weapon = "Bow";
+clone1.display(); // Output: Character: Archer, Weapon: Bow
+```
+
 # Structural design patterns
 Structural design patterns focus on how classes and objects are composed to form larger, more flexible structures. They help ensure that if one part of a system changes, the entire structure doesn’t have to change. These patterns promote efficient and scalable relationships between entities while keeping them loosely coupled.
 
@@ -101,6 +335,48 @@ Key Patterns:
 7. **Proxy Pattern** - Provides a placeholder or surrogate to control access to another object.
     
     Example: Virtual proxy loading an image only when it is needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Behavioral design patterns
 Behavioral design patterns focus on communication between objects, defining how objects interact, distribute responsibilities, and manage the flow of information. These patterns help ensure loose coupling while promoting flexibility and reusability of behavior.
