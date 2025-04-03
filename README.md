@@ -759,3 +759,66 @@ Lets you add further operations to objects without modifying them, by defining a
 Captures and restores an object's internal state without violating encapsulation.
     
     Example: Undo/Redo functionality in text editors.
+
+## 1. Chain of Responsibility Pattern  
+The **Chain of Responsibility Pattern** allows multiple objects to handle a request without the sender knowing which one will handle it. Requests are passed along a chain until an object processes them.
+
+### Key Features:  
+- Reduces coupling between sender and receiver.  
+- Allows multiple handlers for a request.  
+- Enhances flexibility in assigning responsibilities dynamically.  
+
+```js
+// Abstract Handler
+class Handler {
+  setNext(handler) {
+    this.nextHandler = handler;
+    return handler;
+  }
+
+  handle(request) {
+    if (this.nextHandler) {
+      return this.nextHandler.handle(request);
+    }
+    return null;
+  }
+}
+
+// Concrete Handlers
+class AuthHandler extends Handler {
+  handle(request) {
+    if (request.authenticated) {
+      console.log("Authentication Passed");
+      return super.handle(request);
+    }
+    console.log("Authentication Failed");
+  }
+}
+
+class LoggerHandler extends Handler {
+  handle(request) {
+    console.log("Logging request:", request);
+    return super.handle(request);
+  }
+}
+
+// Usage
+const auth = new AuthHandler();
+const logger = new LoggerHandler();
+
+auth.setNext(logger);
+
+auth.handle({ authenticated: true });
+// Output:
+// Authentication Passed
+// Logging request: { authenticated: true }
+```
+
+
+🔹 Use Cases:
+1. Authentication & Authorization processing.
+2. Logging and validation in middleware.
+3. Event handling in GUI frameworks.
+4. Exception handling chains.
+
+
