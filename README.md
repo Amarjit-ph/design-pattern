@@ -103,6 +103,19 @@ db2.connect(); // Output: Connected to Database.
 console.log(db1 === db2); // Output: true
 ```
 
+Ensures that only one instance of a class exists and provides a global access point.
+
+🔹 Use Cases:
+
+1. Database Connection Pool – Ensures a single database connection is reused.
+2. Logging System – Centralized logging to maintain consistency across the app.
+3. Configuration Manager – Loads app settings once and provides a global reference.
+4. Thread Pool – Manages a single set of threads shared across multiple tasks.
+
+
+
+
+
 ## 2. Factory Method Pattern
 The Factory Method Pattern provides an interface for creating objects but allows subclasses to decide which specific class to instantiate. Instead of calling a constructor directly, the creation logic is handled in a method, promoting flexibility, loose coupling, and easier code maintenance.
 
@@ -142,6 +155,17 @@ shape1.draw(); // Output: Drawing Circle
 const shape2 = ShapeFactory.getShape("Square");
 shape2.draw(); // Output: Drawing Square
 ```
+
+Creates objects without specifying the exact class, allowing subclasses to determine the object type.
+
+🔹 Use Cases:
+
+1. Shape Factory (Circle, Square, etc.) – Returns shape objects based on input.
+2. Notification System (Email, SMS, Push) – Creates a notification object based on the required type.
+3. Vehicle Factory (Car, Bike, Truck) – Instantiates different vehicles dynamically.
+4. Parser Factory (XML, JSON, CSV) – Creates the correct parser based on file format.
+
+
 ## 3.  Abstract Factory Pattern
 The Abstract Factory Pattern provides an interface for creating families of related or dependent objects without specifying their concrete classes. It allows you to produce multiple types of related objects that share a common theme, ensuring consistency across products while keeping creation logic flexible and scalable.
 
@@ -210,6 +234,17 @@ renderUI(lightTheme); // Output: Rendering Light Button, Rendering Light Checkbo
 const darkTheme = new DarkFactory();
 renderUI(darkTheme); // Output: Rendering Dark Button, Rendering Dark Checkbox
 ```
+
+Creates families of related objects without specifying their concrete classes.
+
+🔹 Use Cases:
+
+1. UI Toolkit (Light & Dark Themes) – Generates buttons, text boxes, and checkboxes based on the theme.
+2. Cross-Platform Development (Windows, macOS, Linux) – Creates UI components compatible with different operating systems.
+3. Game Development (2D & 3D Engines) – Abstracts game objects based on rendering type.
+4. Database Driver Factory (MySQL, PostgreSQL, MongoDB) – Provides database connections dynamically.
+
+
 ## 4. Builder Pattern
 
 The Builder Pattern is used to construct complex objects step by step, allowing you to create different representations of the same object. It separates the construction process from the final object representation, making the code cleaner and more manageable, especially when dealing with objects with many optional parameters.
@@ -265,6 +300,15 @@ const meal = new MealBuilder()
 meal.showItems(); // Output: Meal includes: Burger, Drink, Dessert
 ```
 
+Separates the construction of complex objects from their representation, allowing step-by-step creation.
+
+🔹 Use Cases:
+
+1. Meal Ordering System (Burger, Drink, Dessert) – Customizes meal items using a builder.
+2. Car Customization (Engine, Wheels, Interior) – Builds cars with varying configurations.
+3. Document Generator (PDF, Word, HTML) – Creates documents with different formats but the same structure.
+4. Query Builder (SQL Query Construction) – Helps in dynamically building complex database queries.
+
 ## 5. Prototype Pattern
 
 The Prototype Pattern creates new objects by cloning an existing object (prototype) instead of creating instances from scratch. It is especially useful when object creation is costly or complex, and you want to avoid repeated instantiation overhead.
@@ -304,6 +348,15 @@ clone1.weapon = "Bow";
 clone1.display(); // Output: Character: Archer, Weapon: Bow
 ```
 
+Creates objects by cloning an existing object instead of instantiating new ones.
+
+🔹 Use Cases:
+
+1. Game Character Duplication – Copies characters with preset abilities and stats.
+2. Document Templates – Creates new documents based on a predefined template.
+3. Graphic Design (Shapes, Images, Icons) – Duplicates objects without reloading assets.
+4. Workflow Automation (Cloning Predefined Tasks) – Automates task duplication.
+
 # Structural design patterns
 Structural design patterns focus on how classes and objects are composed to form larger, more flexible structures. They help ensure that if one part of a system changes, the entire structure doesn’t have to change. These patterns promote efficient and scalable relationships between entities while keeping them loosely coupled.
 
@@ -337,46 +390,322 @@ Key Patterns:
     Example: Virtual proxy loading an image only when it is needed.
 
 
+## 1. Adapter Pattern
+The Adapter Pattern acts as a bridge between incompatible interfaces, allowing them to work together. It translates one interface into another expected by the client.
 
+Key Features:
+- Enables compatibility between different interfaces.
+- Acts as a wrapper to modify input/output formats.
+- Useful for integrating legacy code with new systems.
 
+```js
+// Existing class (Old API)
+class OldPaymentGateway {
+  processPayment(amount) {
+    console.log(`Processing payment of $${amount} through old gateway.`);
+  }
+}
 
+// New interface expected by the client
+class NewPaymentGateway {
+  makePayment(amount) {
+    console.log(`Processing payment of $${amount} through new gateway.`);
+  }
+}
 
+// Adapter to make OldPaymentGateway compatible with NewPaymentGateway
+class PaymentAdapter extends NewPaymentGateway {
+  constructor(oldGateway) {
+    super();
+    this.oldGateway = oldGateway;
+  }
 
+  makePayment(amount) {
+    this.oldGateway.processPayment(amount);
+  }
+}
 
+// Usage
+const oldGateway = new OldPaymentGateway();
+const adapter = new PaymentAdapter(oldGateway);
+adapter.makePayment(100); // Output: Processing payment of $100 through old gateway.
+```
 
+🔹 Use Cases:
 
+1. Connecting a legacy system to a new API.
+2. Converting XML-based APIs to JSON-based APIs.
+3. Using third-party libraries with different interface requirements.
+4. Adapting database drivers for different SQL engines.
 
+## 2. Bridge Pattern
+The Bridge Pattern decouples abstraction from implementation, allowing them to evolve independently. It is useful when a class has multiple dimensions of variations that need to be managed separately.
 
+Key Features:
+- Promotes loose coupling between abstraction and implementation.
+- Makes code more scalable and flexible.
+- Useful when dealing with different platforms or devices.
 
+```js
+// Implementor
+class Renderer {
+  renderShape() {}
+}
 
+// Concrete Implementations
+class VectorRenderer extends Renderer {
+  renderShape(shape) {
+    console.log(`Rendering ${shape} as vector.`);
+  }
+}
 
+class RasterRenderer extends Renderer {
+  renderShape(shape) {
+    console.log(`Rendering ${shape} as raster.`);
+  }
+}
 
+// Abstraction
+class Shape {
+  constructor(renderer) {
+    this.renderer = renderer;
+  }
+  draw() {}
+}
 
+// Refined Abstractions
+class Circle extends Shape {
+  constructor(renderer) {
+    super(renderer);
+  }
+  draw() {
+    this.renderer.renderShape("Circle");
+  }
+}
 
+// Usage
+const vectorCircle = new Circle(new VectorRenderer());
+vectorCircle.draw(); // Output: Rendering Circle as vector.
 
+const rasterCircle = new Circle(new RasterRenderer());
+rasterCircle.draw(); // Output: Rendering Circle as raster.
+```
 
+🔹 Use Cases:
 
+1. Supporting multiple rendering engines (Vector vs. Raster).
+2. Separating UI elements from platform-specific rendering.
+3. Decoupling business logic from different data sources.
+4. Managing device-independent graphics frameworks.
 
+## 3. Composite Pattern
+The Composite Pattern is used to treat individual objects and groups of objects uniformly. It enables a tree-like structure where leaf and composite nodes are handled the same way.
 
+Key Features:
+- Treats individual objects and compositions uniformly.
+- Useful for tree structures like file systems, UIs, or hierarchies.
+- Simplifies client code by handling groups of objects in the same way.
 
+```js
+// Component Interface
+class Graphic {
+  draw() {}
+}
 
+// Leaf
+class Circle extends Graphic {
+  draw() {
+    console.log("Drawing a Circle");
+  }
+}
 
+// Composite
+class Group extends Graphic {
+  constructor() {
+    super();
+    this.children = [];
+  }
+  add(graphic) {
+    this.children.push(graphic);
+  }
+  draw() {
+    this.children.forEach((graphic) => graphic.draw());
+  }
+}
 
+// Usage
+const circle1 = new Circle();
+const circle2 = new Circle();
 
+const group = new Group();
+group.add(circle1);
+group.add(circle2);
 
+group.draw();
+// Output:
+// Drawing a Circle
+// Drawing a Circle
+```
 
+🔹 Use Cases:
 
+1. File system representation (Folders & Files).
+2. UI Component trees (Buttons, Panels, Windows).
+3. Managing organizational hierarchies.
+4. Building complex graphical objects in games.
 
+## 4. Decorator Pattern
+The Decorator Pattern dynamically adds behavior or responsibilities to objects without modifying their code. It follows the principle of open-closed design.
 
+Key Features:
+- Allows behavior modification at runtime.
+- Enhances existing functionality without altering base class code.
+- Supports multiple decorators stacked on an object.
 
+```js
+// Base Component
+class Coffee {
+  cost() {
+    return 5;
+  }
+}
 
+// Decorator
+class Milk extends Coffee {
+  constructor(baseCoffee) {
+    super();
+    this.baseCoffee = baseCoffee;
+  }
 
+  cost() {
+    return this.baseCoffee.cost() + 2;
+  }
+}
 
+// Usage
+const simpleCoffee = new Coffee();
+console.log(simpleCoffee.cost()); // Output: 5
 
+const milkCoffee = new Milk(simpleCoffee);
+console.log(milkCoffee.cost());
+```
 
+🔹 Use Cases:
+1. Adding features to UI components dynamically (e.g., tooltips, borders).
+2. Implementing logging, caching, or authentication without modifying existing classes.
+3. Extending functionality of graphical editors (e.g., adding filters, effects).
+4. Enhancing game characters with power-ups.
 
+## 5. Facade Pattern
+The Facade Pattern provides a simplified interface to a larger, more complex system.
 
+Key Features:
+- Hides the complexity of subsystems.
+- Provides a unified, high-level interface.
+- Improves code readability and maintainability.
 
+```js
+// Complex Subsystem
+class CPU {
+  start() {
+    console.log("CPU starting...");
+  }
+}
+
+class Memory {
+  load() {
+    console.log("Loading memory...");
+  }
+}
+
+class HardDrive {
+  read() {
+    console.log("Reading data from Hard Drive...");
+  }
+}
+
+// Facade
+class Computer {
+  constructor() {
+    this.cpu = new CPU();
+    this.memory = new Memory();
+    this.hardDrive = new HardDrive();
+  }
+
+  start() {
+    console.log("Starting computer...");
+    this.cpu.start();
+    this.memory.load();
+    this.hardDrive.read();
+  }
+}
+
+// Usage
+const myComputer = new Computer();
+myComputer.start();
+// Output:
+// Starting computer...
+// CPU starting...
+// Loading memory...
+// Reading data from Hard Drive...
+
+```
+🔹 Use Cases:
+1. Simplifying database or API interactions.
+2. Providing a unified interface for complex subsystems.
+3. Managing third-party library integrations with a clean API.
+4. Creating simplified service interfaces in web applications.
+
+## 6. Proxy Pattern
+The Proxy Pattern acts as a surrogate or placeholder for another object, controlling access to it.
+
+Key Features:
+- Controls access to an object.
+- Can add security, caching, or logging functionalities.
+- Helps in implementing lazy loading and remote proxies.
+
+```js
+// Real Subject
+class RealImage {
+  constructor(filename) {
+    this.filename = filename;
+    this.loadFromDisk();
+  }
+
+  loadFromDisk() {
+    console.log(`Loading ${this.filename}`);
+  }
+
+  display() {
+    console.log(`Displaying ${this.filename}`);
+  }
+}
+
+// Proxy
+class ProxyImage {
+  constructor(filename) {
+    this.filename = filename;
+    this.realImage = null;
+  }
+
+  display() {
+    if (!this.realImage) {
+      this.realImage = new RealImage(this.filename);
+    }
+    this.realImage.display();
+  }
+}
+
+// Usage
+const image = new ProxyImage("photo.jpg");
+image.display(); // Output: Loading photo.jpg, Displaying photo.jpg
+image.display(); // Output: Displaying photo.jpg
+```
+🔹 Use Cases:
+1. Implementing virtual proxies for lazy loading.
+2. Adding security layers (e.g., authentication).
+3. Managing expensive object creation.
+4. Controlling access to remote objects.
 
 # Behavioral design patterns
 Behavioral design patterns focus on communication between objects, defining how objects interact, distribute responsibilities, and manage the flow of information. These patterns help ensure loose coupling while promoting flexibility and reusability of behavior.
